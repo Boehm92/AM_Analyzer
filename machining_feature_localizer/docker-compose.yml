@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  am_localizer:
+    container_name: am_localizer
+    build: .
+    ports:
+      - "4001:4001"
+    env_file:
+      - .env
+    volumes:
+      - $DATA_FOLDER_EXTERNAL:$DATA_FOLDER
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]

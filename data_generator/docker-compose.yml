@@ -1,0 +1,8 @@
+services:
+  am_data_generator:
+    build: .
+    container_name: am_data_generator
+    env_file:
+      - .env
+    volumes:
+      - ${DATA_FOLDER_EXTERNAL}:${DATA_FOLDER}  # Stellt sicher, dass /data auf das externe Verzeichnis gemappt ist
