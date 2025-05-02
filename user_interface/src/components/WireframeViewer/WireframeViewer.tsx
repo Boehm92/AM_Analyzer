@@ -11,10 +11,7 @@ import GridOffIcon from "@mui/icons-material/GridOff";
 
 const labelColors: Record<number, string | null> = {
     0: "#ff0000",  1: "#ff7300", 2: "#ffbf00", 3: "#d4ff00", 4: "#66ff00",
-    5: "#00ff33",  6: "#00ffbf", 7: "#00bfff", 8: "#0066ff", 9: "#0000ff",
-    10: "#7300ff", 11: "#bf00ff", 12: "#ff00bf", 13: "#ff0066", 14: "#ff0033",
-    15: "#800000", 16: "#804000", 17: "#808000", 18: "#408000", 19: "#008040",
-    20: "#008080", 21: "#004080", 22: "#000080", 23: "#400080", 24: null
+    5: "#00ff33",  6: "#00ffbf", 7: "#00bfff", 8: "#0066ff", 9: null
 };
 
 interface WireframeViewerProps {
