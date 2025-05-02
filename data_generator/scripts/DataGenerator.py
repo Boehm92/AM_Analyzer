@@ -29,16 +29,17 @@ class DataGenerator:
             try:
                 for _ in range(_machining_feature_count):
                     if self.select_machining_feature_id_random:
-                        _machining_feature_id = np.random.randint(0, 24)
+                        _machining_feature_id = np.random.randint(0, 9)
                     else:
                         _machining_feature_id = self.machining_feature_id
 
                     _machining_feature, _machining_feature_time = \
-                        MachiningFeature(_machining_feature_id).create()
+                        MachiningFeature(_machining_feature_id, _new_cad_model).create()
 
                     if _machining_feature_time <= 0:
                         raise ValueError("Manufacturing time is zero or below.")
                     _manufacturing_time += _machining_feature_time
+
                     _new_cad_model = CsgOperation(_new_cad_model, _machining_feature).difference()
 
                     _machining_feature_id_list.append(_machining_feature_id)

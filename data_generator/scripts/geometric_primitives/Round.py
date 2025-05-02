@@ -4,20 +4,21 @@ import madcad as mdc
 
 
 class Round:
-    def __init__(self):
+    def __init__(self, new_cad_model):
+        self.new_cad_model = new_cad_model
         self.dir = np.random.choice(["direction_1", "direction_2", "direction_3", "direction_4", "direction_5",
                                      "direction_6", "direction_7", "direction_8", "direction_9", "direction_10",
                                      "direction_11", "direction_12"])
-        self.radius = np.random.uniform(1, 4.5)
+        self.radius = 2
         self.length = self.radius - (self.radius * math.sin(math.radians(45)))
         self.width = self.radius - (self.radius * math.sin(math.radians(45)))
         self.depth = 10.3
         self.negative_start_point = -0.0001
         self.positive_start_point = 10.0001
 
-        self.max_volume = 177
-        self.max_manufacturing_time = 0.5
-        self.manufacturing_time_side_supplement = 0.16
+        self.max_volume = 9
+        self.max_manufacturing_time = 4
+        self.manufacturing_time_side_supplement = 0.25
         self.manufacturing_time_bottom_supplement = 1
 
         self.round_vectors = {
@@ -160,11 +161,12 @@ class Round:
         }
 
     def manufacturing_time_calculation(self, round):
-        manufacturing_time = self.max_manufacturing_time * (round.volume() / self.max_volume)
-        if self.dir in ["direction_7", "direction_8", "direction_11", "direction_12"]:
+        _volume = mdc.intersection(self.new_cad_model, round).volume()
+        manufacturing_time = self.max_manufacturing_time * (_volume / self.max_volume)
+        if self.dir in ["direction_7", "direction_8", "direction_11", "direction_12", "direction_2", "direction_4",
+                        "direction_6", "direction_10"]:
             manufacturing_time += self.manufacturing_time_side_supplement
-        if self.dir in ["direction_2", "direction_4", "direction_6", "direction_10"]:
-            manufacturing_time += self.manufacturing_time_bottom_supplement
+
         return manufacturing_time
 
     def transformation(self):
@@ -174,6 +176,7 @@ class Round:
                                  self.round_vectors[self.dir]["vector_A"])]
 
         _round = mdc.extrusion(self.depth[self.dir], mdc.flatsurface(_round))
+
         _manufacturing_time = round(self.manufacturing_time_calculation(_round), 4)
 
         return _round, _manufacturing_time
