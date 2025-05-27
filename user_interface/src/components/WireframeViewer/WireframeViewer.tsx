@@ -10,8 +10,16 @@ import GridOnIcon from "@mui/icons-material/GridOn";
 import GridOffIcon from "@mui/icons-material/GridOff";
 
 const labelColors: Record<number, string | null> = {
-    0: "#ff0000",  1: "#ff7300", 2: "#ffbf00", 3: "#d4ff00", 4: "#66ff00",
-    5: "#00ff33",  6: "#00ffbf", 7: "#00bfff", 8: "#0066ff", 9: null
+    0: "#e6194b",  // Rot
+    1: "#3cb44b",  // Grün
+    2: "#ffe119",  // Gelb
+    3: "#4363d8",  // Blau
+    4: "#f58231",  // Orange
+    5: "#911eb4",  // Violett
+    6: "#42d4f4",  // Cyan
+    7: "#f032e6",  // Pink
+    8: "#bfef45",  // Hellgrün
+    9: null        // Kein Label oder transparent
 };
 
 interface WireframeViewerProps {
@@ -68,7 +76,7 @@ export default function WireframeViewer({ fileUrl, features, predictedLabels }: 
                 </IconButton>
             </Box>
             <Canvas
-                camera={{ position: [50, 50, 50], fov: 45 }}
+                camera={{ position: [100, 100, 100], fov: 45 }}
                 shadows
                 style={{ background: "whitesmoke", width: "100%", height: "90%" }}
             >
@@ -107,18 +115,16 @@ function WireframeSTLMesh({ fileUrl, isWireframe }: { fileUrl: string, isWirefra
 }
 
 function LabeledVertices({ features, predictedLabels }: { features: number[][]; predictedLabels: number[] }) {
-    // Immer `useMemo` aufrufen, auch wenn die Eingaben leer sind
     const vertices = useMemo(() => {
-        if (!features.length || !predictedLabels.length) return [];
-        return features
-            .map((coord, index) => {
-                if (predictedLabels[index] === 24) return null;
-                return {
-                    position: new THREE.Vector3(coord[0], coord[1], coord[2]),
-                    color: labelColors[predictedLabels[index] % 25] || "#ffffff"
-                };
-            })
-            .filter(v => v !== null);
+        const result = [];
+        for (let i = 0; i < features.length; i++) {
+            const label = predictedLabels[i];
+            if (label === 9 || labelColors[label] == null) continue;
+            const position = new THREE.Vector3(...features[i]);
+            const color = labelColors[label]!;
+            result.push({ position, color });
+        }
+        return result;
     }, [features, predictedLabels]);
 
     if (!vertices.length) return null;
@@ -126,9 +132,9 @@ function LabeledVertices({ features, predictedLabels }: { features: number[][]; 
     return (
         <>
             {vertices.map((v, i) => (
-                <mesh key={i} position={[v!.position.x, v!.position.y, v!.position.z]}>
-                    <sphereGeometry args={[0.5, 16, 16]} />
-                    <meshStandardMaterial color={v!.color} />
+                <mesh key={i} position={v.position.toArray()}>
+                    <sphereGeometry args={[2, 16, 16]} />
+                    <meshStandardMaterial color={v.color} />
                 </mesh>
             ))}
         </>

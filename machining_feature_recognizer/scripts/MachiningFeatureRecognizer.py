@@ -74,50 +74,61 @@ class MachiningFeatureRecognizer:
         return val_f1
 
     def test(self):
-        _intersecting_models = []
-        _offset = 5.000001
+        _offset = 5.001
         _new_cad_model = mdc.io.read(os.path.join(os.getenv('TEST_DATA'), "received.stl"))
         _new_cad_model.mergeclose()
         _new_cad_model = mdc.segmentation(_new_cad_model)
 
-        # Initialisiere das kombinierte Label-Array mit False
-        combined_predicted_labels = [False] * 24
+        combined_predicted_labels = [False] * 9
 
-        for x in range(3):
-            for y in range(2):
-                for z in range(3):
+        for x in range(7):
+            for y in range(7):
+                for z in range(6):
+                    _position = [x * 10 + _offset, y * 10 + _offset, z * 10 + _offset]
+
                     try:
-                        _position = [x * 10 + _offset, y * 10 + _offset, z * 10 + _offset]
                         _cube = mdc.brick(width=mdc.vec3(10)).transform(mdc.vec3(_position))
                         _intersected_model = mdc.intersection(_new_cad_model, _cube).transform(
                             -mdc.vec3(*_position) + _offset)
+
                         mdc.write(_intersected_model, os.path.join(os.getenv('TEST_DATA'), "received.stl"))
 
                         _test_dataset = DataImporter(os.getenv('TEST_DATA'), os.getenv('TEST_DATA'))
                         _test_loader = DataLoader(_test_dataset, batch_size=self.hyper_parameters.batch_size,
                                                   shuffle=False, drop_last=True)
-                    except FileNotFoundError:
-                        print('No cad test data found.')
-                        continue
 
-                    _network_model = self.network_model(self.training_dataset, self.device,
-                                                            self.hyper_parameters).to(self.device)
-                    _network_model.load_state_dict(
+                        _network_model = self.network_model(
+                            _test_dataset, self.device, self.hyper_parameters).to(self.device)
+                        _network_model.load_state_dict(
                             torch.load((os.getenv('WEIGHTS') + '/mfr_weights.pt'), torch.device('cuda')))
 
-                    predicted_labels = _network_model.test(_test_loader)
-                    predicted_labels = predicted_labels[0]
+                        predicted_labels = _network_model.test(_test_loader)[0]
 
-                    combined_predicted_labels = [combined_predicted_labels[i] or bool(predicted_labels[i]) for i in
-                                                     range(24)]
+                        if len(predicted_labels) != len(combined_predicted_labels):
+                            print(
+                                f"⚠️ Erwartet {len(combined_predicted_labels)} Labels, aber {len(predicted_labels)} erhalten. "
+                                f"(x={x}, y={y}, z={z})")
+                            continue
 
-                    os.remove(os.path.join(os.getenv('TEST_DATA'), "processed/mfr_data.pt"))
-                    os.remove(os.path.join(os.getenv('TEST_DATA'), "processed/pre_filter.pt"))
-                    os.remove(os.path.join(os.getenv('TEST_DATA'), "processed/pre_transform.pt"))
-                    os.remove(os.path.join(os.getenv('TEST_DATA'), "received.stl"))
 
-        del _test_dataset
-        del _test_loader
-        del _network_model
+                        combined_predicted_labels = [
+                            combined_predicted_labels[i] or bool(predicted_labels[i])
+                            for i in range(len(combined_predicted_labels))
+                        ]
+
+                        for file in [
+                            "processed/mfr_data.pt",
+                            "processed/pre_filter.pt",
+                            "processed/pre_transform.pt",
+                            "received.stl"
+                        ]:
+                            try:
+                                os.remove(os.path.join(os.getenv('TEST_DATA'), file))
+                            except FileNotFoundError:
+                                pass
+
+                    except Exception as e:
+                        print(f"⚠️ Skipping subregion at x={x}, y={y}, z={z} due to error: {e}")
+                        continue
 
         return combined_predicted_labels

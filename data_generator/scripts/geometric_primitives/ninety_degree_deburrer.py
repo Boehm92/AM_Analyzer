@@ -12,48 +12,49 @@ class ninety_degree_deburrer:
 
         self.max_volume = 10.9
         self.max_manufacturing_time = 0.33
-        self.manufacturing_time_side_supplement = 0.25
+        self.manufacturing_time_side_supplement = 0
 
         self.vectors = {
             "direction_1": {
-                "vector_A": mdc.dvec3(0, 0, -0.001),
-                "vector_B": mdc.dvec3(-3.15, 0, -0.001),
+                "vector_A": mdc.dvec3(0, 0, -0.002),
+                "vector_B": mdc.dvec3(-3.15, 0, -0.002),
                 "vector_C": mdc.dvec3(-2.75, 0, 0.4),
                 "vector_D": mdc.dvec3(0, 0, 0.4),
             },
             "direction_2": {
                 "vector_A": mdc.dvec3(0, 0, 9.6),
                 "vector_B": mdc.dvec3(-2.75, 0, 9.6),
-                "vector_C": mdc.dvec3(-3.15, 0, 10.001),
-                "vector_D": mdc.dvec3(0, 0, 10.001),
+                "vector_C": mdc.dvec3(-3.15, 0, 10.002),
+                "vector_D": mdc.dvec3(0, 0, 10.002),
             },
             "direction_3": {
-                "vector_A": mdc.dvec3(0, -0.0001, 0),
-                "vector_B": mdc.dvec3(-3.15, -0.0001, 0),
+                "vector_A": mdc.dvec3(0, -0.002, 0),
+                "vector_B": mdc.dvec3(-3.15, -0.002, 0),
                 "vector_C": mdc.dvec3(-2.75, 0.4, 0),
                 "vector_D": mdc.dvec3(0, 0.4, 0),
             },
             "direction_4": {
                 "vector_A": mdc.dvec3(0, 9.6, 0),
                 "vector_B": mdc.dvec3(-2.75,  9.6, 0),
-                "vector_C": mdc.dvec3(-3.15, 10.0001, 0),
-                "vector_D": mdc.dvec3(0, 10.0001, 0)
+                "vector_C": mdc.dvec3(-3.15, 10.002, 0),
+                "vector_D": mdc.dvec3(0, 10.002, 0)
             },
             "direction_5": {
-                "vector_A": mdc.dvec3(-0.0001, 0, 0),
-                "vector_B": mdc.dvec3(-0.0001, 0, -3.15),
+                "vector_A": mdc.dvec3(-0.002, 0, 0),
+                "vector_B": mdc.dvec3(-0.002, 0, -3.15),
                 "vector_C": mdc.dvec3(0.4, 0, -2.75),
                 "vector_D": mdc.dvec3(0.4, 0, 0),
             },
             "direction_6": {
                 "vector_A": mdc.dvec3(9.6, 0, 0),
                 "vector_B": mdc.dvec3(9.6, 0, -2.75),
-                "vector_C": mdc.dvec3(10.0001, 0, -3.15),
-                "vector_D": mdc.dvec3(10.0001, 0, 0),
+                "vector_C": mdc.dvec3(10.002, 0, -3.15),
+                "vector_D": mdc.dvec3(10.002, 0, 0),
             },
         }
 
     def manufacturing_time_calculation(self, _deburrer):
+        print(_deburrer.volume())
         _volume = mdc.intersection(self.new_cad_model, _deburrer).volume()
         _manufacturing_time = self.max_manufacturing_time * (_volume / self.max_volume)
 

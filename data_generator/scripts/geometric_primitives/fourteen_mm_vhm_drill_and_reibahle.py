@@ -12,45 +12,45 @@ class fourteen_mm_vhm_drill_and_reibahle:
         self.pos_z = np.random.uniform(1, 9)
 
         self.max_volume = 1731
-        self.max_manufacturing_time = 2.5
-        self.manufacturing_time_side_supplement = 0.25
+        self.max_manufacturing_time = 1.6
+        self.manufacturing_time_side_supplement = 0
 
         self.vectors = {
             "direction_1": {
-                "vector_A": mdc.dvec3(0, 0, -0.0001),
-                "vector_B": mdc.dvec3(-7.5, 0, -0.0001),
+                "vector_A": mdc.dvec3(0, 0, -0.002),
+                "vector_B": mdc.dvec3(-7.5, 0, -0.002),
                 "vector_C": mdc.dvec3(-7.5, 0, self.pos_z),
                 "vector_D": mdc.dvec3(0, 0, self.pos_z + 2.57),
             },
             "direction_2": {
-                "vector_A": mdc.dvec3(0, 0, 10.0001 - self.pos_z - 2.57),
-                "vector_B": mdc.dvec3(-7.5, 0, 10.0001 - self.pos_z),
-                "vector_C": mdc.dvec3(-7.5, 0, 10.0001),
-                "vector_D": mdc.dvec3(0, 0, 10.0001),
+                "vector_A": mdc.dvec3(0, 0, 10.002 - self.pos_z - 2.57),
+                "vector_B": mdc.dvec3(-7.5, 0, 10.002 - self.pos_z),
+                "vector_C": mdc.dvec3(-7.5, 0, 10.002),
+                "vector_D": mdc.dvec3(0, 0, 10.002),
             },
             "direction_3": {
-                "vector_A": mdc.dvec3(0, -0.0001, 0),
-                "vector_B": mdc.dvec3(-7.5, -0.0001, 0),
+                "vector_A": mdc.dvec3(0, -0.002, 0),
+                "vector_B": mdc.dvec3(-7.5, -0.002, 0),
                 "vector_C": mdc.dvec3(-7.5, self.pos_z, 0),
                 "vector_D": mdc.dvec3(0, self.pos_z + 2.57, 0),
             },
             "direction_4": {
-                "vector_A": mdc.dvec3(0, 10.0001 - self.pos_z - 2.57, 0),
-                "vector_B": mdc.dvec3(-7.5, 10.0001 - self.pos_z, 0),
-                "vector_C": mdc.dvec3(-7.5, 10.0001, 0),
-                "vector_D": mdc.dvec3(0, 10.0001, 0),
+                "vector_A": mdc.dvec3(0, 10.002 - self.pos_z - 2.57, 0),
+                "vector_B": mdc.dvec3(-7.5, 10.002 - self.pos_z, 0),
+                "vector_C": mdc.dvec3(-7.5, 10.002, 0),
+                "vector_D": mdc.dvec3(0, 10.002, 0),
             },
             "direction_5": {
-                "vector_A": mdc.dvec3(-0.0001, 0, 0),
-                "vector_B": mdc.dvec3(-0.0001, 0, -7.5),
+                "vector_A": mdc.dvec3(-0.002, 0, 0),
+                "vector_B": mdc.dvec3(-0.002, 0, -7.5),
                 "vector_C": mdc.dvec3(self.pos_z, 0, -7.5),
                 "vector_D": mdc.dvec3(self.pos_z + 2.57, 0, 0),
             },
             "direction_6": {
-                "vector_A": mdc.dvec3(10.0001 - self.pos_z - 2.57, 0, 0),
-                "vector_B": mdc.dvec3(10.0001 - self.pos_z, 0, -7.5),
-                "vector_C": mdc.dvec3(10.0001, 0, -7.5),
-                "vector_D": mdc.dvec3(10.0001, 0, 0),
+                "vector_A": mdc.dvec3(10.002 - self.pos_z - 2.57, 0, 0),
+                "vector_B": mdc.dvec3(10.002 - self.pos_z, 0, -7.5),
+                "vector_C": mdc.dvec3(10.002, 0, -7.5),
+                "vector_D": mdc.dvec3(10.002, 0, 0),
             },
         }
 

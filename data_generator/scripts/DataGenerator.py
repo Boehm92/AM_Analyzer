@@ -23,7 +23,7 @@ class DataGenerator:
             _machining_feature_id_list = []
             _machining_feature_list = []
             _manufacturing_time = 0
-            _new_cad_model = Cube(10, mdc.vec3(5, 5, 5)).transform()
+            _new_cad_model = Cube(10, mdc.vec3(5.001, 5.001, 5.001)).transform()
             _machining_feature_count = np.random.randint(1, (self.max_machining_feature_count + 1))
 
             try:
@@ -41,7 +41,6 @@ class DataGenerator:
                     _manufacturing_time += _machining_feature_time
 
                     _new_cad_model = CsgOperation(_new_cad_model, _machining_feature).difference()
-
                     _machining_feature_id_list.append(_machining_feature_id)
                     _machining_feature_list.append(_machining_feature)
                 mdc.write(_new_cad_model, os.getenv(self.target_directory) + "/" + str(_model_id) + ".stl")

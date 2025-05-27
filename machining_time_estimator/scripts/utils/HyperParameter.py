@@ -23,7 +23,7 @@ class HyperParameter:
 
                 "number_conv_layers": 3,
                 "conv_hidden_channels": 64,
-                "mlp_hidden_channels": 256,
+                "mlp_hidden_channels": 64,
                 "aggr": "max",
             })
         elif network_model == "SageGnNetwork":

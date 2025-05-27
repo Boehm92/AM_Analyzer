@@ -5,11 +5,16 @@ import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 
 const labelColors: Record<number, string | null> = {
-    0: "#ff0000",  1: "#ff7300", 2: "#ffbf00", 3: "#d4ff00", 4: "#66ff00",
-    5: "#00ff33",  6: "#00ffbf", 7: "#00bfff", 8: "#0066ff", 9: "#0000ff",
-    10: "#7300ff", 11: "#bf00ff", 12: "#ff00bf", 13: "#ff0066", 14: "#ff0033",
-    15: "#800000", 16: "#804000", 17: "#808000", 18: "#408000", 19: "#008040",
-    20: "#008080", 21: "#004080", 22: "#000080", 23: "#400080", 24: null
+    0: "#e6194b",  // Rot
+    1: "#3cb44b",  // Grün
+    2: "#ffe119",  // Gelb
+    3: "#4363d8",  // Blau
+    4: "#f58231",  // Orange
+    5: "#911eb4",  // Violett
+    6: "#42d4f4",  // Cyan
+    7: "#f032e6",  // Pink
+    8: "#bfef45",  // Hellgrün
+    9: null        // Kein Label oder transparent
 };
 
 export default function MachiningFeatureDisplay({ selectedFeatures }: { selectedFeatures: boolean[] }) {

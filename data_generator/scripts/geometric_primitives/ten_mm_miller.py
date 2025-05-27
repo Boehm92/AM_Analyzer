@@ -10,14 +10,14 @@ class ten_mm_miller:
         self.radius = np.random.uniform(6, 13)
         self.pos_x = np.random.uniform(-5, 15)
         self.pos_y = np.random.uniform(-5, 15)
-        self.positive_start_point = 10.0001
-        self.positive_end_point = np.random.uniform(1, 9)
-        self.negative_start_point = -0.0001
-        self.negative_end_point = np.random.uniform(1, 10.0001)
+        self.positive_start_point = 10.002
+        self.positive_end_point = np.random.uniform(-0.002, 9)
+        self.negative_start_point = -0.002
+        self.negative_end_point = np.random.uniform(1, 10.002)
 
-        self.max_volume = 531
-        self.max_manufacturing_time = 1
-        self.manufacturing_time_side_supplement = 0.25
+        self.max_volume = 5275
+        self.max_manufacturing_time = 9
+        self.manufacturing_time_side_supplement = 0
 
         self.transform = {
             "direction_1": [mdc.vec3(self.pos_x, self.pos_y, self.positive_end_point),

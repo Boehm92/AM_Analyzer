@@ -11,13 +11,13 @@ class thirty_degree_deburrer:
         self.pos_y = np.random.uniform(-7, 17.78)
 
         self.max_volume = 2381
-        self.max_manufacturing_time = 3
-        self.manufacturing_time_side_supplement = 0.25
+        self.max_manufacturing_time = 1
+        self.manufacturing_time_side_supplement = 0
 
         self.vectors = {
             "direction_1": {
-                "vector_A": mdc.dvec3(0, 0, -0.001),
-                "vector_B": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 0, -0.001),
+                "vector_A": mdc.dvec3(0, 0, -0.002),
+                "vector_B": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 0, -0.002),
                 "vector_C": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 0, 1),
                 "vector_D": mdc.dvec3(-10.25, 0, 6.22),
                 "vector_E": mdc.dvec3(0, 0, 6.22),
@@ -26,36 +26,36 @@ class thirty_degree_deburrer:
                 "vector_A": mdc.dvec3(0, 0, 3.78),
                 "vector_B": mdc.dvec3(-10.25, 0, 3.78),
                 "vector_C": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 0, 9),
-                "vector_D": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 0, 10.001),
-                "vector_E": mdc.dvec3(0, 0, 10.001),
+                "vector_D": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 0, 10.002),
+                "vector_E": mdc.dvec3(0, 0, 10.002),
             },
             "direction_3": {
                 "vector_A": mdc.dvec3(0, -0.1, 0),
-                "vector_B": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), -0.001, 0),
+                "vector_B": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), -0.002, 0),
                 "vector_C": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 1, 0),
                 "vector_D": mdc.dvec3(-10.25, 6.22, 0),
                 "vector_E": mdc.dvec3(0, 6.22, 0),
             },
             "direction_4": {
-                "vector_E": mdc.dvec3(0, 10.0001, 0),
-                "vector_D": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 10.0001, 0),
+                "vector_E": mdc.dvec3(0, 10.002, 0),
+                "vector_D": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 10.002, 0),
                 "vector_C": mdc.dvec3(-10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12)))), 9, 0),
                 "vector_B": mdc.dvec3(-10.25, 3.78, 0),
                 "vector_A": mdc.dvec3(0, 3.78, 0),
             },
             "direction_5": {
-                "vector_A": mdc.dvec3(-0.001, 0, 0),
-                "vector_B": mdc.dvec3(-0.001, 0, -10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12))))),
+                "vector_A": mdc.dvec3(-0.002, 0, 0),
+                "vector_B": mdc.dvec3(-0.002, 0, -10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12))))),
                 "vector_C": mdc.dvec3(1, 0, -10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12))))),
                 "vector_D": mdc.dvec3(6.22, 0, -10.25),
                 "vector_E": mdc.dvec3(6.22, 0, 0),
             },
             "direction_6": {
-                "vector_A": mdc.dvec3(3.78, -0.001, 0),
-                "vector_B": mdc.dvec3(3.78, -0.001, -10.25),
-                "vector_C": mdc.dvec3(9, -0.001, -10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12))))),
-                "vector_E": mdc.dvec3(10.0001, -0.001, 0),
-                "vector_D": mdc.dvec3(10.0001, -0.001,
+                "vector_A": mdc.dvec3(3.78, -0.002, 0),
+                "vector_B": mdc.dvec3(3.78, -0.002, -10.25),
+                "vector_C": mdc.dvec3(9, -0.002, -10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12))))),
+                "vector_E": mdc.dvec3(10.002, -0.002, 0),
+                "vector_D": mdc.dvec3(10.002, -0.002,
                                       -10.25 - (5.22 * (np.sin(np.pi / 12) / np.cos(np.sin(np.pi / 12))))),
             },
         }

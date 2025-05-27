@@ -6,6 +6,7 @@ import madcad as mdc
 from utils.DataImporter import DataImporter
 from torch_geometric.loader import DataLoader
 from utils.HyperParameter import HyperParameter
+import traceback
 
 
 class MachiningFeatureLocalizer:
@@ -78,51 +79,55 @@ class MachiningFeatureLocalizer:
         return val_f1
 
     def test(self):
-        _intersecting_models = []
         _combined_response = {"features": [], "predicted_labels": []}
-        _offset = 5.000001
+        _offset = 5.001
         _new_cad_model = mdc.io.read(os.path.join(os.getenv('TEST_DATA'), "received.stl"))
         _new_cad_model.mergeclose()
         _new_cad_model = mdc.segmentation(_new_cad_model)
 
-        for x in range(3):
-            for y in range(2):
-                for z in range(3):
+        for x in range(7):
+            for y in range(7):
+                for z in range(6):
+                    _position = [x * 10 + _offset, y * 10 + _offset, z * 10 + _offset]
                     try:
-                        _position = [x * 10 + _offset, y * 10 + _offset, z * 10 + _offset]  # Konvertiere zu Liste
                         _cube = mdc.brick(width=mdc.vec3(10)).transform(mdc.vec3(_position))
                         _intersected_model = mdc.intersection(_new_cad_model, _cube).transform(
                             -mdc.vec3(*_position) + _offset)
                         mdc.write(_intersected_model, os.path.join(os.getenv('TEST_DATA'), "received.stl"))
-                        print("Hallo stefan")
+
                         _test_dataset = DataImporter(os.getenv('TEST_DATA'), os.getenv('TEST_DATA'))
                         _test_loader = DataLoader(_test_dataset, batch_size=self.hyper_parameters.batch_size,
                                                   shuffle=False, drop_last=True)
-                    except FileNotFoundError:
-                        print('No CAD test data found.')
+
+                        _network_model = self.network_model(
+                            _test_dataset, self.device, self.hyper_parameters).to(self.device)
+                        _network_model.load_state_dict(
+                            torch.load((os.getenv('WEIGHTS') + '/mfs_weights.pt'), torch.device('cuda')))
+                        response = _network_model.test(_test_loader)
+
+                        corrected_features = [
+                            [f[0] + _position[0] - 5, f[1] + _position[1] - 5, f[2] + _position[2] - 5]
+                            for f in response["features"]
+                        ]
+
+                        _combined_response["features"].extend(corrected_features)
+                        _combined_response["predicted_labels"].extend(response["predicted_labels"])
+
+                        for file in [
+                            "processed/mfs_data.pt",
+                            "processed/pre_filter.pt",
+                            "processed/pre_transform.pt",
+                            "received.stl"
+                        ]:
+                            try:
+                                os.remove(os.path.join(os.getenv('TEST_DATA'), file))
+                            except FileNotFoundError:
+                                pass
+
+                    except Exception as e:
+                        print(f"⚠️ Skipping subregion at x={x}, y={y}, z={z} due to error: {e}")
                         continue
 
-                    _network_model = self.network_model(_test_dataset, self.device, self.hyper_parameters).to(
-                        self.device)
-                    _network_model.load_state_dict(
-                        torch.load((os.getenv('WEIGHTS') + '/mfs_weights.pt'), torch.device('cuda')))
-                    response = _network_model.test(_test_loader)
-
-                    corrected_features = [
-                        [f[0] + _position[0] - 5, f[1] + _position[1] - 5, f[2] + _position[2] - 5]
-                        for f in response["features"]
-                    ]
-
-                    # **Kombinierte Response aktualisieren**
-                    _combined_response["features"].extend(corrected_features)
-                    _combined_response["predicted_labels"].extend(response["predicted_labels"])
-
-                    os.remove(os.path.join(os.getenv('TEST_DATA'), "processed/mfs_data.pt"))
-                    os.remove(os.path.join(os.getenv('TEST_DATA'), "processed/pre_filter.pt"))
-                    os.remove(os.path.join(os.getenv('TEST_DATA'), "processed/pre_transform.pt"))
-                    os.remove(os.path.join(os.getenv('TEST_DATA'), "received.stl"))
-        del _test_dataset
-        del _test_loader
-        del _network_model
-
         return _combined_response
+
+

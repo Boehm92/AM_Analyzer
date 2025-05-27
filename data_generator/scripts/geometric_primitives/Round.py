@@ -13,13 +13,12 @@ class Round:
         self.length = self.radius - (self.radius * math.sin(math.radians(45)))
         self.width = self.radius - (self.radius * math.sin(math.radians(45)))
         self.depth = 10.3
-        self.negative_start_point = -0.0001
-        self.positive_start_point = 10.0001
+        self.negative_start_point = -0.002
+        self.positive_start_point = 10.002
 
         self.max_volume = 9
-        self.max_manufacturing_time = 4
-        self.manufacturing_time_side_supplement = 0.25
-        self.manufacturing_time_bottom_supplement = 1
+        self.max_manufacturing_time = 0.16
+        self.manufacturing_time_side_supplement = 0
 
         self.round_vectors = {
             # front side top edge

@@ -14,7 +14,7 @@ _parser.add_argument('--cad_data_generation_start_cycle',
                           'start number of the data generation cycle then is not adapted, the existing data is just'
                           'overwritten')
 _parser.add_argument('--cad_data_generation_end_cycles',
-                     dest='cad_data_generation_end_cycles', type=int, default=10,
+                     dest='cad_data_generation_end_cycles', type=int, default=4000,
                      help='This value defines how many cad models with multiple machining feature are '
                           'created.')
 _parser.add_argument('--max_machining_feature_count',
