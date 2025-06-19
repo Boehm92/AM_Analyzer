@@ -4,99 +4,42 @@ import madcad as mdc
 
 class five_five_mm_vhm_drill:
     def __init__(self, new_cad_model):
-        self.dir = np.random.choice(["direction_1", "direction_2", "direction_3", "direction_4", "direction_5",
-                                     "direction_6"])
+        self.dir = np.random.choice(["direction_1", "direction_2", "direction_3"])
+
         self.new_cad_model = new_cad_model
-        self.pos_x = np.random.uniform(-1.5, 11.5)
-        self.pos_y = np.random.uniform(-1.5, 11.5)
-        self.pos_z = np.random.uniform(1, 10.002)
+        self.radius = 2.75
+        self.pos_x = np.random.uniform(0.5 + self.radius, self.new_cad_model.length - 0.5 - self.radius)
+        self.pos_y = np.random.uniform(0.5 + self.radius, self.new_cad_model.depth - 0.5 - self.radius)
+        self.pos_z = np.random.uniform(0.5 + self.radius, self.new_cad_model.height - 0.5 - self.radius)
 
-        self.max_volume = 204
-        self.max_manufacturing_time = 0.05
-        self.manufacturing_time_side_supplement = 0
+        self.start = -0.0001
+        self.depth_x = self.new_cad_model.length + 0.0001
+        self.depth_y = self.new_cad_model.depth + 0.0001
+        self.depth_z = self.new_cad_model.height + 0.0001
 
-        self.vectors = {
-            "direction_1": {
-                "vector_A": mdc.dvec3(0, 0, -0.002),
-                "vector_B": mdc.dvec3(-2.75, 0, -0.002),
-                "vector_C": mdc.dvec3(-2.75, 0, self.pos_z),
-                "vector_D": mdc.dvec3(0, 0, self.pos_z + 1.41),
-            },
-            "direction_2": {
-                "vector_A": mdc.dvec3(0, 0, 10.002 - self.pos_z - 1.41),
-                "vector_B": mdc.dvec3(-2.75, 0, 10.002 - self.pos_z),
-                "vector_C": mdc.dvec3(-2.75, 0, 10.002),
-                "vector_D": mdc.dvec3(0, 0, 10.002),
-            },
-            "direction_3": {
-                "vector_A": mdc.dvec3(0, -0.002, 0),
-                "vector_B": mdc.dvec3(-2.75, -0.002, 0),
-                "vector_C": mdc.dvec3(-2.75, self.pos_z, 0),
-                "vector_D": mdc.dvec3(0, self.pos_z + 1.41, 0),
-            },
-            "direction_4": {
-                "vector_A": mdc.dvec3(0, 10.002 - self.pos_z - 1.41, 0),
-                "vector_B": mdc.dvec3(-2.75, 10.002 - self.pos_z, 0),
-                "vector_C": mdc.dvec3(-2.75, 10.002, 0),
-                "vector_D": mdc.dvec3(0, 10.002, 0),
-            },
-            "direction_5": {
-                "vector_A": mdc.dvec3(-0.002, 0, 0),
-                "vector_B": mdc.dvec3(-0.002, 0, -2.75),
-                "vector_C": mdc.dvec3(self.pos_z, 0, -2.75),
-                "vector_D": mdc.dvec3(self.pos_z + 1.41, 0, 0),
-            },
-            "direction_6": {
-                "vector_A": mdc.dvec3(10.002 - self.pos_z - 1.41, 0, 0),
-                "vector_B": mdc.dvec3(10.002 - self.pos_z, 0, -2.75),
-                "vector_C": mdc.dvec3(10.002, 0, -2.75),
-                "vector_D": mdc.dvec3(10.002, 0, 0),
-            },
+        self.max_volume = 7699
+        self.max_manufacturing_time = 3.33
+        self.reclamp_supplement = 2
+
+        self.transform = {
+            "direction_1": [mdc.vec3(self.pos_x, self.pos_y, self.start),
+                            mdc.vec3(self.pos_x, self.pos_y, self.depth_z)],
+            "direction_2": [mdc.vec3(self.pos_x, self.start, self.pos_z),
+                            mdc.vec3(self.pos_x, self.depth_y, self.pos_z)],
+            "direction_3": [mdc.vec3(self.start, self.pos_y, self.pos_z),
+                            mdc.vec3(self.depth_x, self.pos_y, self.pos_z)],
         }
 
-    def manufacturing_time_calculation(self, _deburrer):
-        _volume = mdc.intersection(self.new_cad_model, _deburrer).volume()
-        _manufacturing_time = self.max_manufacturing_time * (_volume / self.max_volume)
+    def manufacturing_time_calculation(self, _through_hole):
+        _manufacturing_time = self.max_manufacturing_time * (_through_hole.volume() / self.max_volume)
 
-        if self.dir in ["direction_1", "direction_3", "direction_4", "direction_5", "direction_6"]:
-            _manufacturing_time += self.manufacturing_time_side_supplement
+        if self.dir in ["direction_1"]:
+            _manufacturing_time += self.reclamp_supplement
 
         return _manufacturing_time
 
     def transformation(self):
-        _vectors = [self.vectors[self.dir]["vector_A"],
-                    self.vectors[self.dir]["vector_B"],
-                    self.vectors[self.dir]["vector_C"],
-                    self.vectors[self.dir]["vector_D"],
-                    ]
+        _through_hole = mdc.cylinder(self.transform[self.dir][0], self.transform[self.dir][1], self.radius)
+        _manufacturing_time = round(self.manufacturing_time_calculation(_through_hole), 4)
 
-        _section = mdc.Wire(_vectors).segmented().flip()
-
-        if self.dir == "direction_1":
-            _deburrer = mdc.revolution(2 * np.pi, (mdc.O, mdc.Z), _section)
-            _deburrer.mergeclose()
-            _deburrer = _deburrer.transform(mdc.vec3(self.pos_x, self.pos_y, 0))
-        if self.dir == "direction_2":
-            _deburrer = mdc.revolution(2 * np.pi, (mdc.O, mdc.Z), _section)
-            _deburrer.mergeclose()
-            _deburrer = _deburrer.transform(mdc.vec3(self.pos_x, self.pos_y, 0))
-        if self.dir == "direction_3":
-            _deburrer = mdc.revolution(2 * np.pi, (mdc.O, mdc.Y), _section)
-            _deburrer.mergeclose()
-            _deburrer = _deburrer.transform(mdc.vec3(self.pos_x, 0, self.pos_y))
-        if self.dir == "direction_4":
-            _deburrer = mdc.revolution(2 * np.pi, (mdc.O, mdc.Y), _section)
-            _deburrer.mergeclose()
-            _deburrer = _deburrer.transform(mdc.vec3(self.pos_x, 0, self.pos_y))
-        if self.dir == "direction_5":
-            _deburrer = mdc.revolution(2 * np.pi, (mdc.O, mdc.X), _section)
-            _deburrer.mergeclose()
-            _deburrer = _deburrer.transform(mdc.vec3(0, self.pos_x, self.pos_y))
-        if self.dir == "direction_6":
-            _deburrer = mdc.revolution(2 * np.pi, (mdc.O, mdc.X), _section)
-            _deburrer.mergeclose()
-            _deburrer = _deburrer.transform(mdc.vec3(0, self.pos_x, self.pos_y))
-
-        _manufacturing_time = round(self.manufacturing_time_calculation(_deburrer), 4)
-
-        return _deburrer, _manufacturing_time
+        return _through_hole, _manufacturing_time

@@ -1,10 +1,12 @@
 import madcad as mdc
+import numpy as np
 
-
-class Cube:
-    def __init__(self, side_length, position):
-        self.side_length = side_length
-        self.position = position
+class Manifold:
+    def __init__(self):
+        self.length = 70
+        self.height = 70
+        self.depth = 60
+        self.manifold_dimensions = mdc.vec3(self.length, self.depth, self.height)
 
     def transform(self):
-        return mdc.brick(width=mdc.vec3(self.side_length)).transform(self.position)
+        return mdc.brick(mdc.vec3(0, 0, 0), self.manifold_dimensions)

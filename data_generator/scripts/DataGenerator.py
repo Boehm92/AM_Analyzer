@@ -1,67 +1,78 @@
 import os
+import time
 import numpy as np
 import madcad as mdc
-# from data_generator.scripts.utils.BinvoxConverter import BinvoxConverter
-from geometric_primitives.base_primitive import Cube
+from geometric_primitives.base_primitive import Manifold
 from utils.MachiningFeature import MachiningFeature
-from utils.CsgOperation import CsgOperation
 from utils.MachiningFeatureLabels import MachiningFeatureLabels
 
+def run_single_model(args):
+    model_id, config = args
+    start_time = time.time()
 
-class DataGenerator:
-    def __init__(self, config):
-        self.cad_data_generation_start_cycle = config.cad_data_generation_start_cycle
-        self.cad_data_generation_end_cycles = config.cad_data_generation_end_cycles
-        self.max_machining_feature_count = config.max_machining_feature_count
-        self.target_directory = config.target_directory
-        self.select_machining_feature_id_random = config.select_machining_feature_id_random
-        self.machining_feature_id = config.machining_feature_id
-        np.random.seed(config.random_generation_seed)
+    base_path = os.getenv(config.target_directory)
+    np.random.seed(config.random_generation_seed + model_id)
 
-    def generate(self):
-        for _model_id in range(self.cad_data_generation_start_cycle, self.cad_data_generation_end_cycles):
-            _machining_feature_id_list = []
-            _machining_feature_list = []
-            _manufacturing_time = 0
-            _new_cad_model = Cube(10, mdc.vec3(5.001, 5.001, 5.001)).transform()
-            _machining_feature_count = np.random.randint(1, (self.max_machining_feature_count + 1))
+    _machining_feature_id_list = []
+    _machining_feature_list = []
+    _manufacturing_time = 0
 
+    # try:
+    _manifold = Manifold()
+    _new_cad_model = _manifold.transform()
+
+    # _machining_config = [(0, np.random.randint(0, 2)),
+    #                      (1, np.random.randint(0, 2)),
+    #                      (2, np.random.randint(0, 2)),
+    #                      (4, np.random.randint(0, 2)),
+    #                      (5, np.random.randint(0, 2)),]
+    _machining_config = [(8, 7)]
+
+    generated_features = []
+    generated_ids = []
+
+    for feature_id, count in _machining_config:
+        for _ in range(count):
             try:
-                for _ in range(_machining_feature_count):
-                    if self.select_machining_feature_id_random:
-                        _machining_feature_id = np.random.randint(0, 9)
-                    else:
-                        _machining_feature_id = self.machining_feature_id
+                feature, m_time = MachiningFeature(feature_id, _manifold).create()
+                # mdc.show([feature, _new_cad_model])
+                if m_time <= 0:
+                    raise ValueError("Manufacturing time is zero or negative.")
+                _manufacturing_time += m_time
+                generated_features.append(feature)
+                generated_ids.append(feature_id)
+            except Exception as e:
+                print(f"[⚠] Fehler beim Erzeugen von Feature {feature_id} für Modell {model_id}: {e}")
 
-                    _machining_feature, _machining_feature_time = \
-                        MachiningFeature(_machining_feature_id, _new_cad_model).create()
 
-                    if _machining_feature_time <= 0:
-                        raise ValueError("Manufacturing time is zero or below.")
-                    _manufacturing_time += _machining_feature_time
+    valid_features = []
+    valid_ids = []
+    for i, feature in enumerate(generated_features):
+        try:
+            # mdc.show([_new_cad_model, feature, feature])
+            _new_cad_model = mdc.difference(_new_cad_model, feature)
+            valid_features.append(feature)
+            valid_ids.append(generated_ids[i])
+        except Exception as e:
+            print(f"[⚠] CSG-Differenz fehlgeschlagen (Modell {model_id}, Feature-ID {generated_ids[i]}): {e}")
 
-                    _new_cad_model = CsgOperation(_new_cad_model, _machining_feature).difference()
-                    _machining_feature_id_list.append(_machining_feature_id)
-                    _machining_feature_list.append(_machining_feature)
-                mdc.write(_new_cad_model, os.getenv(self.target_directory) + "/" + str(_model_id) + ".stl")
-                MachiningFeatureLabels(_machining_feature_list, _model_id, self.target_directory,
-                                       _machining_feature_id_list).write_vertices_file()
-                MachiningFeatureLabels(_machining_feature_list, _model_id, self.target_directory,
-                                       _machining_feature_id_list).write_bounding_box_file()
-                MachiningFeatureLabels(_machining_feature_list, _model_id, self.target_directory,
-                                       _machining_feature_id_list).write_manufacturing_time_file(_manufacturing_time)
 
-                print(f"Created CAD model {_model_id} with {_machining_feature_count} machining feature")
-                print(f"machining feature: {_machining_feature_id_list}")
-            except:
-                # We use here a broad exception clause to avoid applying machining feature if not enough surface is
-                # available
-                print(f"One or more machining feature for the CAD model {_model_id} were not feasible."
-                      f"The regarding machining feature had the id {_machining_feature_id}."
-                      f" For CAD model {_model_id}, {_} from {_machining_feature_count} have been applied."
-                      f" This can happen when not enough surface is available for the CSG difference operation")
+    _new_cad_model.mergeclose()
+    _new_cad_model = mdc.segmentation(_new_cad_model)
 
-            del _new_cad_model
-            del _machining_feature_id_list
+    mdc.show([_new_cad_model])
 
-        # BinvoxConverter(self.target_directory).create_file()
+    model_path = os.path.join(base_path, f"{model_id}.stl")
+    mdc.write(_new_cad_model, model_path)
+
+    labels = MachiningFeatureLabels(valid_features, model_id, config.target_directory, valid_ids)
+    labels.write_vertices_file()
+    labels.write_bounding_box_file()
+    labels.write_manufacturing_time_file(_manufacturing_time)
+
+    elapsed = round(time.time() - start_time, 2)  # ⏱️ Zeit stoppen
+    print(f"✔ Modell {model_id} erstellt mit {len(valid_features)} Features: {valid_ids} ({elapsed} Sek.)")
+
+    # except Exception as e:
+    #     elapsed = round(time.time() - start_time, 2)
+    #     print(f"[⛔] Schwerwiegender Fehler bei Modell {model_id} ({elapsed} Sek.): {e}")

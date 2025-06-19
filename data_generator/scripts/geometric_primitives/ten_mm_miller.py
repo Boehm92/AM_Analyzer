@@ -6,45 +6,40 @@ class ten_mm_miller:
     def __init__(self, new_cad_model):
         self.dir = np.random.choice(["direction_1", "direction_2", "direction_3", "direction_4", "direction_5",
                                      "direction_6"])
+
         self.new_cad_model = new_cad_model
         self.radius = np.random.uniform(6, 13)
-        self.pos_x = np.random.uniform(-5, 15)
-        self.pos_y = np.random.uniform(-5, 15)
-        self.positive_start_point = 10.002
-        self.positive_end_point = np.random.uniform(-0.002, 9)
-        self.negative_start_point = -0.002
-        self.negative_end_point = np.random.uniform(1, 10.002)
+        self.pos_x = np.random.uniform(0.5 + self.radius, self.new_cad_model.length  -0.5 - self.radius)
+        self.pos_y = np.random.uniform(0.5 + self.radius, self.new_cad_model.depth - 0.5 - self.radius)
+        self.pos_z = np.random.uniform(0.5 + self.radius, self.new_cad_model.height - 0.5 - self.radius)
 
-        self.max_volume = 5275
-        self.max_manufacturing_time = 9
-        self.manufacturing_time_side_supplement = 0
+        self.start = -0.0001
+        self.depth = np.random.uniform(0.5, 14.5)
+
+        self.max_volume = 7699
+        self.max_manufacturing_time = 14.5
+        self.reclamp_supplement = 2
 
         self.transform = {
-            "direction_1": [mdc.vec3(self.pos_x, self.pos_y, self.positive_end_point),
-                            mdc.vec3(self.pos_x, self.pos_y, self.positive_start_point)],
-
-            "direction_2": [mdc.vec3(self.pos_x, self.pos_y, self.negative_start_point),
-                            mdc.vec3(self.pos_x, self.pos_y, self.negative_end_point)],
-
-            "direction_3": [mdc.vec3(self.pos_x, self.positive_end_point, self.pos_y),
-                            mdc.vec3(self.pos_x, self.positive_start_point, self.pos_y)],
-
-            "direction_4": [mdc.vec3(self.pos_x, self.negative_start_point, self.pos_y),
-                            mdc.vec3(self.pos_x, self.negative_end_point, self.pos_y)],
-
-            "direction_5": [mdc.vec3(self.positive_end_point, self.pos_x, self.pos_y),
-                            mdc.vec3(self.positive_start_point, self.pos_x, self.pos_y)],
-
-            "direction_6": [mdc.vec3(self.negative_start_point, self.pos_x, self.pos_y),
-                            mdc.vec3(self.negative_end_point, self.pos_x, self.pos_y)],
+            "direction_1": [mdc.vec3(self.pos_x, self.pos_y, self.start),
+                            mdc.vec3(self.pos_x, self.pos_y, self.depth)],
+            "direction_2": [mdc.vec3(self.pos_x, self.pos_y, self.new_cad_model.height - self.depth),
+                            mdc.vec3(self.pos_x, self.pos_y, self.new_cad_model.height)],
+            "direction_3": [mdc.vec3(self.pos_x, self.start, self.pos_z),
+                            mdc.vec3(self.pos_x, self.depth, self.pos_z)],
+            "direction_4": [mdc.vec3(self.pos_x, self.new_cad_model.depth - self.depth, self.pos_z),
+                            mdc.vec3(self.pos_x, self.new_cad_model.depth, self.pos_z)],
+            "direction_5": [mdc.vec3(self.start, self.pos_y, self.pos_z),
+                            mdc.vec3(self.depth, self.pos_y, self.pos_z)],
+            "direction_6": [mdc.vec3(self.new_cad_model.length - self.depth, self.pos_y, self.pos_z),
+                            mdc.vec3(self.new_cad_model.length, self.pos_y, self.pos_z)],
         }
 
     def manufacturing_time_calculation(self, _through_hole):
-        _volume = mdc.intersection(self.new_cad_model, _through_hole).volume()
-        _manufacturing_time = self.max_manufacturing_time * (_volume / self.max_volume)
+        _manufacturing_time = self.max_manufacturing_time * ( _through_hole.volume() / self.max_volume)
 
-        if self.dir in ["direction_3", "direction_4", "direction_5", "direction_6"]:
-            _manufacturing_time += self.manufacturing_time_side_supplement
+        if self.dir in ["direction_1"]:
+            _manufacturing_time += self.reclamp_supplement
 
         return _manufacturing_time
 
