@@ -1,6 +1,4 @@
 import torch
-from thop import profile
-from statistics import mean
 import torch.nn.functional as f
 from torch_geometric.nn import SAGEConv
 from sklearn.metrics import f1_score

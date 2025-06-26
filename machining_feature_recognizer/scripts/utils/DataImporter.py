@@ -12,7 +12,7 @@ class DataImporter(InMemoryDataset, ABC):
         self.data_list = []
         self.raw_data_root = raw_data_root
         super().__init__(root, transform)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
 
     @property
     def num_node_labels(self) -> int:
@@ -69,7 +69,7 @@ class DataImporter(InMemoryDataset, ABC):
             edge_index.append([index_list[2], index_list[0]])
             edge_index.append([index_list[0], index_list[2]])
 
-        unique_vectors = unique_vectors / np.array([10, 10, 10])
+        unique_vectors = unique_vectors / np.array([80, 80, 80])
 
         label_array = np.zeros(9, dtype=np.float32)
         for label in file_labels:

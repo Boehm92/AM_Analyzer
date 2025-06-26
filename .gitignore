@@ -113,3 +113,4 @@ machining_feature_recognizer/scripts/utils/__pycache__/DataImporter.cpython-36.p
 user_interface/.next/
 user_interface/node_modules/
 user_interface/.env.local
+/wandb/

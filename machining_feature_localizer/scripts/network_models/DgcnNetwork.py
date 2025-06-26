@@ -118,14 +118,19 @@ class DgcnNetwork(torch.nn.Module):
         return f1, all_predicted_labels
 
     @torch.no_grad()
+
+    @torch.no_grad()
     def test(self, loader):
         self.eval()
         response = {}
+
         for data in loader:
             out = self(data.x.to(self.device), data.edge_index.to(self.device))
+
             predicted_labels = out.argmax(dim=1).cpu().numpy()  # NumPy-Array
 
-            features = (data.x.cpu().numpy() * 10).tolist()
+            scale = torch.tensor([80, 80, 80], device=data.x.device)
+            features = (data.x * scale).cpu().numpy().tolist()
 
             response = {
                 "features": features,  # Die ursprünglichen Eingangs-Features

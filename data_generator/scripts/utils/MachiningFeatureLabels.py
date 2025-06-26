@@ -29,17 +29,19 @@ class MachiningFeatureLabels:
             _new_cad_model.vectors.reshape([int(_new_cad_model.vectors.size / 3), 3]), axis=0))
         _new_cad_model_vertices = [self.truncate_coordinates(vertices)
                                    for vertices in _new_cad_model_vertices]
-        _label_list = [9] * len(_new_cad_model_vertices)
+
+        _label_list = [6] * len(_new_cad_model_vertices)
+        tolerance = 1e-4
 
         for machining_feature_id, machining_feature in enumerate(self.machining_feature_list):
-            _machining_feature_for_labeling = np.array([point.to_tuple() for point in machining_feature.points])
-            _machining_feature_for_labeling = [self.truncate_coordinates(vertices)
-                                               for vertices in _machining_feature_for_labeling]
+            _machining_feature_for_labeling = np.array([self.truncate_coordinates(point.to_tuple())
+                                                        for point in machining_feature.points])
 
-            for vertices_index, cad_model_vertices in enumerate(_new_cad_model_vertices):
-                for machining_feature_vertices in _machining_feature_for_labeling:
-                    if cad_model_vertices == machining_feature_vertices:
-                        _label_list[vertices_index] = self.machining_feature_id_list[machining_feature_id]
+            for i, cad_vertex in enumerate(_new_cad_model_vertices):
+                for feature_vertex in _machining_feature_for_labeling:
+                    if np.linalg.norm(np.array(cad_vertex) - np.array(feature_vertex)) < tolerance:
+                        _label_list[i] = self.machining_feature_id_list[machining_feature_id]
+                        break  # kein mehrfaches Überschreiben
 
         self.write_csv_file(_label_list, "vertices_label")
 
@@ -52,8 +54,8 @@ class MachiningFeatureLabels:
                                    for vertices in _new_cad_model_vertices]
 
         for machining_feature_id, machining_feature in enumerate(self.machining_feature_list):
+
             _machining_feature_for_labeling = np.array([point.to_tuple() for point in machining_feature.points])
-            _machining_feature_for_labeling = np.clip(_machining_feature_for_labeling, 0, 10)
 
             if (coord in _new_cad_model_vertices for coord in _machining_feature_for_labeling):
                 x_values = [vector[0] for vector in _machining_feature_for_labeling]

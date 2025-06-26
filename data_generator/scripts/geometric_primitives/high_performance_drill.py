@@ -4,16 +4,21 @@ import madcad as mdc
 
 class high_performance_drill:
     def __init__(self, new_cad_model):
-        self.dir = np.random.choice(["direction_1", "direction_2", "direction_3", "direction_4", "direction_5", "direction_6"])
+        self.dir = np.random.choice([
+            "direction_1", "direction_2", "direction_3",
+            "direction_4", "direction_5", "direction_6"
+        ])
+
         self.new_cad_model = new_cad_model
 
         self.pos_x = np.random.uniform(10, self.new_cad_model.length - 10)
         self.pos_y = np.random.uniform(10, self.new_cad_model.depth - 10)
         self.pos_z = np.random.uniform(10, self.new_cad_model.height - 10)
 
-        self.depth = np.random.uniform(1.0, 30.0)
+        self.radius = 4.0
+        self.depth = np.random.uniform(10.0, 20.0)
         self.tip_height = 0.69
-        self.max_volume = 608
+        self.max_volume = 1841
         self.max_manufacturing_time = 0.5
         self.reclamp_supplement = 2
 
@@ -27,44 +32,44 @@ class high_performance_drill:
         return {
             "direction_1": {
                 "vector_A": mdc.dvec3(0, 0, -0.002),
-                "vector_B": mdc.dvec3(-4.4, 0, -0.002),
-                "vector_C": mdc.dvec3(-4.4, 0, body_d),
+                "vector_B": mdc.dvec3(-self.radius, 0, -0.002),
+                "vector_C": mdc.dvec3(-self.radius, 0, body_d),
                 "vector_D": mdc.dvec3(-2.5, 0, total_d),
                 "vector_E": mdc.dvec3(0, 0, total_d),
             },
             "direction_2": {
                 "vector_A": mdc.dvec3(0, 0, self.new_cad_model.height - total_d),
                 "vector_B": mdc.dvec3(-2.5, 0, self.new_cad_model.height - total_d),
-                "vector_C": mdc.dvec3(-4.4, 0, self.new_cad_model.height - body_d),
-                "vector_D": mdc.dvec3(-4.4, 0, self.new_cad_model.height + 0.0001),
+                "vector_C": mdc.dvec3(-self.radius, 0, self.new_cad_model.height - body_d),
+                "vector_D": mdc.dvec3(-self.radius, 0, self.new_cad_model.height + 0.0001),
                 "vector_E": mdc.dvec3(0, 0, self.new_cad_model.height + 0.0001),
             },
             "direction_3": {
                 "vector_A": mdc.dvec3(0, -0.002, 0),
-                "vector_B": mdc.dvec3(-4.4, -0.002, 0),
-                "vector_C": mdc.dvec3(-4.4, body_d, 0),
+                "vector_B": mdc.dvec3(-self.radius, -0.002, 0),
+                "vector_C": mdc.dvec3(-self.radius, body_d, 0),
                 "vector_D": mdc.dvec3(-2.5, total_d, 0),
                 "vector_E": mdc.dvec3(0, total_d, 0),
             },
             "direction_4": {
                 "vector_A": mdc.dvec3(0, self.new_cad_model.depth - total_d, 0),
                 "vector_B": mdc.dvec3(-2.5, self.new_cad_model.depth - total_d, 0),
-                "vector_C": mdc.dvec3(-4.4, self.new_cad_model.depth - body_d, 0),
-                "vector_D": mdc.dvec3(-4.4, self.new_cad_model.depth + 0.0001, 0),
+                "vector_C": mdc.dvec3(-self.radius, self.new_cad_model.depth - body_d, 0),
+                "vector_D": mdc.dvec3(-self.radius, self.new_cad_model.depth + 0.0001, 0),
                 "vector_E": mdc.dvec3(0, self.new_cad_model.depth + 0.0001, 0),
             },
             "direction_5": {
                 "vector_A": mdc.dvec3(-0.002, 0, 0),
-                "vector_B": mdc.dvec3(-0.002, 0, -4.4),
-                "vector_C": mdc.dvec3(body_d, 0, -4.4),
+                "vector_B": mdc.dvec3(-0.002, 0, -self.radius),
+                "vector_C": mdc.dvec3(body_d, 0, -self.radius),
                 "vector_D": mdc.dvec3(total_d, 0, -2.5),
                 "vector_E": mdc.dvec3(total_d, 0, 0),
             },
             "direction_6": {
                 "vector_A": mdc.dvec3(self.new_cad_model.length - total_d, -0.001, 0),
                 "vector_B": mdc.dvec3(self.new_cad_model.length - total_d, -0.001, -2.5),
-                "vector_C": mdc.dvec3(self.new_cad_model.length - body_d, -0.001, -4.4),
-                "vector_D": mdc.dvec3(self.new_cad_model.length + 0.0001, -0.001, -4.4),
+                "vector_C": mdc.dvec3(self.new_cad_model.length - body_d, -0.001, -self.radius),
+                "vector_D": mdc.dvec3(self.new_cad_model.length + 0.0001, -0.001, -self.radius),
                 "vector_E": mdc.dvec3(self.new_cad_model.length + 0.0001, -0.001, 0),
             },
         }

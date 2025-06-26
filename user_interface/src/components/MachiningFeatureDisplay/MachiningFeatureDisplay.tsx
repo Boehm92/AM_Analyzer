@@ -11,10 +11,7 @@ const labelColors: Record<number, string | null> = {
     3: "#4363d8",  // Blau
     4: "#f58231",  // Orange
     5: "#911eb4",  // Violett
-    6: "#42d4f4",  // Cyan
-    7: "#f032e6",  // Pink
-    8: "#bfef45",  // Hellgrün
-    9: null        // Kein Label oder transparent
+    6: null
 };
 
 export default function MachiningFeatureDisplay({ selectedFeatures }: { selectedFeatures: boolean[] }) {

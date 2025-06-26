@@ -109,46 +109,17 @@ class ManufacturingTimeRegression:
 
         total_response = 0.0
 
-        for x in range(7):
-            for y in range(7):
-                for z in range(6):
-                    _position = [x * 10 + _offset, y * 10 + _offset, z * 10 + _offset]
-                    try:
-                        _cube = mdc.brick(width=mdc.vec3(10)).transform(mdc.vec3(_position))
-                        _intersected_model = mdc.intersection(_new_cad_model, _cube).transform(
-                            -mdc.vec3(*_position) + _offset)
-                        mdc.write(_intersected_model, os.path.join(os.getenv('TEST_DATA'), "received.stl"))
+        _test_dataset = DataImporter(os.getenv('TEST_DATA'), os.getenv('TEST_DATA'))
+        _test_loader = DataLoader(_test_dataset, batch_size=self.hyper_parameters.batch_size,
+                                  shuffle=False, drop_last=True)
 
-                        _test_dataset = DataImporter(os.getenv('TEST_DATA'), os.getenv('TEST_DATA'))
-                        _test_loader = DataLoader(_test_dataset, batch_size=self.hyper_parameters.batch_size,
-                                                  shuffle=False, drop_last=True)
+        _network_model = self.network_model(_test_dataset, self.device, self.hyper_parameters).to(
+            self.device)
+        _network_model.load_state_dict(
+            torch.load((os.getenv('WEIGHTS') + '/mte_weights.pt'), torch.device('cuda')))
 
-                        _network_model = self.network_model(_test_dataset, self.device, self.hyper_parameters).to(
-                            self.device)
-                        _network_model.load_state_dict(
-                            torch.load((os.getenv('WEIGHTS') + '/mte_weights.pt'), torch.device('cuda')))
-
-                        total_response += _network_model.test(_test_loader)
-                        # print("volume: ", _intersected_model.volume())
-                        print("Result for each region: ", total_response)
-                    except FileNotFoundError:
-                        print(f'❌ STL or processed data not found at x={x}, y={y}, z={z}')
-                        continue
-                    except Exception as e:
-                        print(f'🚨 Skipping subregion at x={x}, y={y}, z={z} due to intersection error')
-                        traceback.print_exc()
-                        continue
-                    finally:
-                        for file in [
-                            "processed/mte_data.pt",
-                            "processed/pre_filter.pt",
-                            "processed/pre_transform.pt",
-                            "received.stl"
-                        ]:
-                            try:
-                                os.remove(os.path.join(os.getenv('TEST_DATA'), file))
-                            except FileNotFoundError:
-                                pass
+        total_response += _network_model.test(_test_loader)
+        print("Result for each region: ", total_response)
 
         _combined_response["time"] = total_response
 

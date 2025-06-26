@@ -4,20 +4,22 @@ import madcad as mdc
 
 class ten_mm_miller:
     def __init__(self, new_cad_model):
-        self.dir = np.random.choice(["direction_1", "direction_2", "direction_3", "direction_4", "direction_5",
-                                     "direction_6"])
+        self.dir = np.random.choice([
+            "direction_1", "direction_2", "direction_3",
+            "direction_4", "direction_5", "direction_6"
+        ])
 
         self.new_cad_model = new_cad_model
-        self.radius = np.random.uniform(6, 13)
+        self.radius = np.random.uniform(5.5, 13)
         self.pos_x = np.random.uniform(0.5 + self.radius, self.new_cad_model.length  -0.5 - self.radius)
         self.pos_y = np.random.uniform(0.5 + self.radius, self.new_cad_model.depth - 0.5 - self.radius)
         self.pos_z = np.random.uniform(0.5 + self.radius, self.new_cad_model.height - 0.5 - self.radius)
 
         self.start = -0.0001
-        self.depth = np.random.uniform(0.5, 14.5)
+        self.depth = np.random.uniform(0.4, 6)
 
-        self.max_volume = 7699
-        self.max_manufacturing_time = 14.5
+        self.max_volume = 7650
+        self.max_manufacturing_time = 4
         self.reclamp_supplement = 2
 
         self.transform = {

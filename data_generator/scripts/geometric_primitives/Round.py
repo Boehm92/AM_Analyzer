@@ -18,7 +18,7 @@ class Round:
         self.depth_value = 10.3
         self.offset = 0.0001
 
-        self.max_volume = 9
+        self.max_volume = 62
         self.max_manufacturing_time = 0.16
         self.manufacturing_time_side_supplement = 0
 

@@ -4,8 +4,10 @@ import madcad as mdc
 
 class five_mm_vhm_drill:
     def __init__(self, new_cad_model):
-        self.dir = np.random.choice(["direction_1", "direction_2", "direction_3", "direction_4", "direction_5",
-                                     "direction_6"])
+        self.dir = np.random.choice([
+            "direction_1", "direction_2", "direction_3",
+            "direction_4", "direction_5", "direction_6"
+        ])
 
         self.new_cad_model = new_cad_model
         self.radius = 2.5
@@ -14,25 +16,27 @@ class five_mm_vhm_drill:
         self.pos_z = np.random.uniform(0.5 + self.radius, self.new_cad_model.height - 0.5 - self.radius)
 
         self.start = -0.0001
-        self.depth = np.random.uniform(0.5, 50)
+        self.depth_x = np.random.uniform(0.5, self.new_cad_model.length + 0.0001)
+        self.depth_y = np.random.uniform(0.5, self.new_cad_model.depth + 0.0001)
+        self.depth_z = np.random.uniform(0.5, self.new_cad_model.height + 0.0001)
 
-        self.max_volume = 7699
+        self.max_volume = 976
         self.max_manufacturing_time = 4
         self.reclamp_supplement = 2
 
         self.transform = {
             "direction_1": [mdc.vec3(self.pos_x, self.pos_y, self.start),
-                            mdc.vec3(self.pos_x, self.pos_y, self.depth)],
-            "direction_2": [mdc.vec3(self.pos_x, self.pos_y, self.new_cad_model.height - self.depth),
-                            mdc.vec3(self.pos_x, self.pos_y, self.new_cad_model.height)],
+                            mdc.vec3(self.pos_x, self.pos_y, self.depth_z)],
+            "direction_2": [mdc.vec3(self.pos_x, self.pos_y, self.new_cad_model.height - self.depth_z),
+                            mdc.vec3(self.pos_x, self.pos_y, self.new_cad_model.height + 0.0001)],
             "direction_3": [mdc.vec3(self.pos_x, self.start, self.pos_z),
-                            mdc.vec3(self.pos_x, self.depth, self.pos_z)],
-            "direction_4": [mdc.vec3(self.pos_x, self.new_cad_model.depth - self.depth, self.pos_z),
-                            mdc.vec3(self.pos_x, self.new_cad_model.depth, self.pos_z)],
+                            mdc.vec3(self.pos_x, self.depth_y, self.pos_z)],
+            "direction_4": [mdc.vec3(self.pos_x, self.new_cad_model.depth - self.depth_y, self.pos_z),
+                            mdc.vec3(self.pos_x, self.new_cad_model.depth + 0.0001, self.pos_z)],
             "direction_5": [mdc.vec3(self.start, self.pos_y, self.pos_z),
-                            mdc.vec3(self.depth, self.pos_y, self.pos_z)],
-            "direction_6": [mdc.vec3(self.new_cad_model.length - self.depth, self.pos_y, self.pos_z),
-                            mdc.vec3(self.new_cad_model.length, self.pos_y, self.pos_z)],
+                            mdc.vec3(self.depth_x, self.pos_y, self.pos_z)],
+            "direction_6": [mdc.vec3(self.new_cad_model.length - self.depth_x, self.pos_y, self.pos_z),
+                            mdc.vec3(self.new_cad_model.length + 0.0001, self.pos_y, self.pos_z)],
         }
 
     def manufacturing_time_calculation(self, _through_hole):

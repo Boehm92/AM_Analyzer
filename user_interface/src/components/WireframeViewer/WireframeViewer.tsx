@@ -4,22 +4,21 @@ import { Canvas, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 import * as THREE from "three";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import GridOnIcon from "@mui/icons-material/GridOn";
 import GridOffIcon from "@mui/icons-material/GridOff";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 
 const labelColors: Record<number, string | null> = {
     0: "#e6194b",  // Rot
     1: "#3cb44b",  // Grün
     2: "#ffe119",  // Gelb
     3: "#4363d8",  // Blau
-    4: "#f58231",  // Orange
+    4: "#000000",  // Schwarz
     5: "#911eb4",  // Violett
-    6: "#42d4f4",  // Cyan
-    7: "#f032e6",  // Pink
-    8: "#bfef45",  // Hellgrün
-    9: null        // Kein Label oder transparent
+    6: null
 };
 
 interface WireframeViewerProps {
@@ -29,24 +28,40 @@ interface WireframeViewerProps {
 }
 
 export default function WireframeViewer({ fileUrl, features, predictedLabels }: WireframeViewerProps) {
-    const [isWireframe, setIsWireframe] = useState(true);
+    const [isWireframe, setIsWireframe] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const viewerRef = useRef<HTMLDivElement>(null);
 
-    const toggleWireframe = () => {
-        setIsWireframe((prev) => !prev);
+    const toggleWireframe = () => setIsWireframe(prev => !prev);
+
+    const toggleFullscreen = () => {
+        if (!document.fullscreenElement && viewerRef.current) {
+            viewerRef.current.requestFullscreen();
+        } else if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
     };
+
+    useEffect(() => {
+        const handleChange = () => setIsFullscreen(!!document.fullscreenElement);
+        document.addEventListener("fullscreenchange", handleChange);
+        return () => document.removeEventListener("fullscreenchange", handleChange);
+    }, []);
 
     return (
         <Box
+            ref={viewerRef}
             sx={{
-                width: "40vw",
-                minWidth: "300px",
-                height: "40vw",
-                maxHeight: "400px",
+                width: isFullscreen ? "100vw" : "40vw",
+                height: isFullscreen ? "100vh" : "40vw",
+                maxHeight: isFullscreen ? "100vh" : "400px",
+                position: "relative",
                 borderRadius: 2,
                 overflow: "hidden",
                 bgcolor: "#787474",
                 boxShadow: "3px 3px 10px rgba(0,0,0,0.2)",
                 margin: "auto",
+                transition: "all 0.3s ease"
             }}
         >
             <Box
@@ -70,9 +85,17 @@ export default function WireframeViewer({ fileUrl, features, predictedLabels }: 
                     onClick={toggleWireframe}
                     color="primary"
                     size="small"
-                    sx={{ position: "absolute", right: 8 }}
+                    sx={{ position: "absolute", right: 48 }}
                 >
                     {isWireframe ? <GridOffIcon /> : <GridOnIcon />}
+                </IconButton>
+                <IconButton
+                    onClick={toggleFullscreen}
+                    color="primary"
+                    size="small"
+                    sx={{ position: "absolute", right: 8 }}
+                >
+                    {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
                 </IconButton>
             </Box>
             <Canvas
@@ -90,7 +113,7 @@ export default function WireframeViewer({ fileUrl, features, predictedLabels }: 
                 {features && predictedLabels && (
                     <LabeledVertices features={features} predictedLabels={predictedLabels} />
                 )}
-                <OrbitControls />
+                <OrbitControls/>
             </Canvas>
         </Box>
     );
@@ -116,15 +139,16 @@ function WireframeSTLMesh({ fileUrl, isWireframe }: { fileUrl: string, isWirefra
 
 function LabeledVertices({ features, predictedLabels }: { features: number[][]; predictedLabels: number[] }) {
     const vertices = useMemo(() => {
-        const result = [];
-        for (let i = 0; i < features.length; i++) {
-            const label = predictedLabels[i];
-            if (label === 9 || labelColors[label] == null) continue;
-            const position = new THREE.Vector3(...features[i]);
-            const color = labelColors[label]!;
-            result.push({ position, color });
-        }
-        return result;
+        if (!features.length || !predictedLabels.length) return [];
+        return features
+            .map((coord, index) => {
+                if (predictedLabels[index] === 6) return null;
+                return {
+                    position: new THREE.Vector3(coord[0], coord[1], coord[2]),
+                    color: labelColors[predictedLabels[index] % 25] || "#ffffff"
+                };
+            })
+            .filter(v => v !== null);
     }, [features, predictedLabels]);
 
     if (!vertices.length) return null;
@@ -132,12 +156,11 @@ function LabeledVertices({ features, predictedLabels }: { features: number[][]; 
     return (
         <>
             {vertices.map((v, i) => (
-                <mesh key={i} position={v.position.toArray()}>
+                <mesh key={i} position={[v!.position.x, v!.position.y, v!.position.z]}>
                     <sphereGeometry args={[2, 16, 16]} />
-                    <meshStandardMaterial color={v.color} />
+                    <meshStandardMaterial color={v!.color} />
                 </mesh>
             ))}
         </>
     );
 }
-
