@@ -2,12 +2,12 @@ import numpy as np
 import madcad as mdc
 
 
-class thirty_degree_deburrer:
-    def __init__(self, new_cad_model, angle_deg=30, flank_length=5.22, radius=10.25, max_depth=16):
+class sixty_degree_deburrer:
+    def __init__(self, new_cad_model, angle_deg=60, flank_length=3.02, radius=9.25, max_depth=16):
         self.angle_deg = angle_deg
         self.flank_length = flank_length
         self.radius = radius
-        self.max_dept = max_depth
+        self.max_depth = max_depth
 
         self.tan_angle = np.tan(np.radians(self.angle_deg))
         self.delta_x = self.flank_length * self.tan_angle
@@ -21,10 +21,11 @@ class thirty_degree_deburrer:
         self.pos_x = np.random.uniform(self.radius, self.new_cad_model.length - self.radius)
         self.pos_y = np.random.uniform(self.radius, self.new_cad_model.depth - self.radius)
         self.pos_z = np.random.uniform(self.radius, self.new_cad_model.height - self.radius)
-        self.depth = np.random.uniform(1, self.max_dept)
+        self.depth = np.random.uniform(1, self.max_depth)
 
-        self.max_manufacturing_time = 3
-        self.reclamp_supplement = 2
+        self.max_volume = 1350
+        self.max_manufacturing_time = 2
+        self.reclamp_supplement = 1
 
         self.vectors = {
             "direction_1": {
@@ -78,7 +79,7 @@ class thirty_degree_deburrer:
         }
 
     def manufacturing_time_calculation(self, _deburrer):
-        _manufacturing_time = self.max_manufacturing_time
+        _manufacturing_time = self.max_manufacturing_time * (_deburrer.volume() / self.max_volume)
 
         if self.dir == "direction_1":
             _manufacturing_time += self.reclamp_supplement

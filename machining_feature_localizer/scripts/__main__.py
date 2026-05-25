@@ -18,7 +18,7 @@ from network_models.AgnNetwork import AgnNetwork
 
 _parser = argparse.ArgumentParser(description='Base configuration of the synthetic data generator')
 _parser.add_argument('--application_mode',
-                     dest='application_mode', default='test', type=str,
+                     dest='application_mode', default='training', type=str,
                      help='The application modes has "training" and "test". When set to trained the framework uses the'
                           'TestModel class to train graph neural network. Please note, if you want to test different'
                           'graph conv layer, the TestModel class must be configured with accordingly. For example,'
@@ -80,7 +80,7 @@ _parser.add_argument('--device',
                           'used operation system, python interpreter, used graphic card and installed cuda toolkit.'
                           'So, it may take some time to find the right setting for you. We suggest, for the first '
                           'implementation, to install the packages manually.')
-_parser.add_argument('--max_epoch', dest='max_epoch', default=15, type=int,
+_parser.add_argument('--max_epoch', dest='max_epoch', default=30, type=int,
                      help='The max epoch defines how often the complete training data is run trough. One epoch means'
                           'therefore, that the graph neural network is fitted ones an all available training data. '
                           'More epochs generally decreases the network loss, but can also lead to overfitting,'

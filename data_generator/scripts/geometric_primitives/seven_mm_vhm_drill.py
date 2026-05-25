@@ -2,7 +2,7 @@ import numpy as np
 import madcad as mdc
 
 
-class five_mm_vhm_drill:
+class seven_mm_vhm_drill:
     def __init__(self, new_cad_model):
         self.dir = np.random.choice([
             "direction_1", "direction_2", "direction_3",
@@ -10,19 +10,19 @@ class five_mm_vhm_drill:
         ])
 
         self.new_cad_model = new_cad_model
-        self.radius = 2.5
+        self.radius = 3.5
         self.pos_x = np.random.uniform(0.5 + self.radius, self.new_cad_model.length - 0.5 - self.radius)
         self.pos_y = np.random.uniform(0.5 + self.radius, self.new_cad_model.depth - 0.5 - self.radius)
         self.pos_z = np.random.uniform(0.5 + self.radius, self.new_cad_model.height - 0.5 - self.radius)
 
         self.start = -0.0001
-        self.depth_x = np.random.uniform(0.5, self.new_cad_model.length + 0.0001)
-        self.depth_y = np.random.uniform(0.5, self.new_cad_model.depth + 0.0001)
-        self.depth_z = np.random.uniform(0.5, self.new_cad_model.height + 0.0001)
+        self.depth_x = self.new_cad_model.length + 0.0001
+        self.depth_y = self.new_cad_model.depth + 0.0001
+        self.depth_z = self.new_cad_model.height + 0.0001
 
-        self.max_volume = 976
-        self.max_manufacturing_time = 4
-        self.reclamp_supplement = 2
+        self.max_volume = 2868
+        self.max_manufacturing_time = 3
+        self.reclamp_supplement = 1
 
         self.transform = {
             "direction_1": [mdc.vec3(self.pos_x, self.pos_y, self.start),

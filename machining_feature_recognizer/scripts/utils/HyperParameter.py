@@ -1,7 +1,7 @@
 class HyperParameter:
     def __init__(self, trial, network_model):
         self.params = {
-            "batch_size": 1,
+            "batch_size": 32,
             "dropout_probability": 0.2,
             "learning_rate": 0.001,
         }

@@ -9,7 +9,7 @@ const labelColors: Record<number, string | null> = {
     1: "#3cb44b",  // Grün
     2: "#ffe119",  // Gelb
     3: "#4363d8",  // Blau
-    4: "#f58231",  // Orange
+    4: "#000000",  // Schwarz
     5: "#911eb4",  // Violett
     6: null
 };
@@ -90,7 +90,7 @@ export default function MachiningFeatureDisplay({ selectedFeatures }: { selected
                             style={{ objectFit: "contain" }} // ✅ Optimierte Bildgröße
                         />
                         <Typography variant="caption" sx={{ marginTop: 1, color: "white" }}>
-                            {fileName.replace(".PNG", "").replace(".png", "")}
+                            {fileName.replace(".PNG", "").replace(".png", "").slice(2)}
                         </Typography>
                     </Box>
                 );

@@ -15,12 +15,11 @@ class Round:
         self.radius = 2
         self.length = self.radius * (1 - math.sin(math.radians(45)))
         self.width = self.length  # same value
-        self.depth_value = 10.3
         self.offset = 0.0001
 
-        self.max_volume = 62
-        self.max_manufacturing_time = 0.16
-        self.manufacturing_time_side_supplement = 0
+        self.max_volume = 66
+        self.max_manufacturing_time = 4
+        self.reclamp_supplement = 1
 
         self.len_x = self.new_cad_model.length
         self.len_y = self.new_cad_model.depth
@@ -140,7 +139,7 @@ class Round:
     def manufacturing_time_calculation(self, round):
         time = self.max_manufacturing_time * (round.volume() / self.max_volume)
         if self.dir in {"direction_2", "direction_4", "direction_6", "direction_10"}:
-            time += self.manufacturing_time_side_supplement
+            time += self.reclamp_supplement
         return time
 
     def transformation(self):

@@ -19,9 +19,9 @@ class fourteen_mm_vhm_drill_and_reibahle:
         self.reib_height = 3.05
         self.total_depth = self.depth + self.reib_height
 
-        self.max_volume = 5420
-        self.max_manufacturing_time = 1
-        self.reclamp_supplement = 2
+        self.max_volume = 7013
+        self.max_manufacturing_time = 2
+        self.reclamp_supplement = 1
 
         self.vectors = self._build_vectors()
 

@@ -18,9 +18,9 @@ class ten_mm_miller:
         self.start = -0.0001
         self.depth = np.random.uniform(0.4, 6)
 
-        self.max_volume = 7650
+        self.max_volume = 3166
         self.max_manufacturing_time = 4
-        self.reclamp_supplement = 2
+        self.reclamp_supplement = 1
 
         self.transform = {
             "direction_1": [mdc.vec3(self.pos_x, self.pos_y, self.start),

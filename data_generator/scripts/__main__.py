@@ -11,13 +11,13 @@ _parser.add_argument('--cad_data_generation_start_cycle',
                      dest='cad_data_generation_start_cycle', type=int, default=1,
                      help='Start ID of the data generation process.')
 _parser.add_argument('--cad_data_generation_end_cycles',
-                     dest='cad_data_generation_end_cycles', type=int, default=2000,
+                     dest='cad_data_generation_end_cycles', type=int, default=24001,
                      help='End ID of the data generation process (non-inclusive).')
 _parser.add_argument('--machining_config',
                      dest='machining_config',
                      type=str,
                      default="""[(0, np.random.randint(0, 7)),
-                                 (1, np.random.randint(0, 4)),
+                                 (1, np.random.randint(0, 3)),
                                  (2, np.random.randint(0, 3)),
                                  (3, np.random.randint(0, 7)),
                                  (4, np.random.randint(0, 7)),
@@ -29,7 +29,7 @@ _parser.add_argument('--machining_config',
                           '1: thirty_degree_deburrer'
                           '2: fourteen_mm_vhm_drill_and_reibahle'
                           '3: high_performance_drill'
-                          '4: five_mm_vhm_drill '
+                          '4: five_mm_vhm_drill'
                           '5: Round)')
 _parser.add_argument('--random_generation_seed',
                      dest='random_generation_seed', type=int, default=42,

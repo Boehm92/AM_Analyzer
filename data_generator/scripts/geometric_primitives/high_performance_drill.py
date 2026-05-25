@@ -18,9 +18,10 @@ class high_performance_drill:
         self.radius = 4.0
         self.depth = np.random.uniform(10.0, 20.0)
         self.tip_height = 0.69
-        self.max_volume = 1841
+
+        self.max_volume = 1023
         self.max_manufacturing_time = 0.5
-        self.reclamp_supplement = 2
+        self.reclamp_supplement = 1
 
         self.vectors = self._build_vectors()
 

@@ -71,7 +71,7 @@ class DataImporter(InMemoryDataset, ABC):
 
         unique_vectors = unique_vectors / np.array([80, 80, 80])
 
-        label_array = np.zeros(9, dtype=np.float32)
+        label_array = np.zeros(6, dtype=np.float32)
         for label in file_labels:
             label_array[label] = 1
 

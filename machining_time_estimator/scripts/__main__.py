@@ -18,7 +18,7 @@ from network_models.GraphConv import GraphConv
 
 _parser = argparse.ArgumentParser(description='Base configuration of the synthetic data generator')
 _parser.add_argument('--application_mode',
-                     dest='application_mode', default='test', type=str,
+                     dest='application_mode', default='training', type=str,
                      help='The application modes has "trained" and "graph". When set to trained the framework uses the'
                           'TestModel class to train graph neural network. Please note, if you want to graph different'
                           'graph conv layer, the TestModel class must be configured with accordingly. For example,'
