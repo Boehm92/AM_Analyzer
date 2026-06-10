@@ -76,15 +76,14 @@ class MachiningFeatureRecognizer:
     def test(self):
         _test_dataset = DataImporter(os.getenv('TEST_DATA'), os.getenv('TEST_DATA'))
         _test_loader = DataLoader(_test_dataset, batch_size=self.hyper_parameters.batch_size,
-                                  shuffle=False, drop_last=True)
+                                  shuffle=False, drop_last=False)
 
-        _network_model = self.network_model(self.training_dataset, self.device,
+        _network_model = self.network_model(_test_dataset, self.device,
                                             self.hyper_parameters).to(self.device)
         _network_model.load_state_dict(
             torch.load((os.getenv('WEIGHTS') + '/mfr_weights.pt'), torch.device('cuda')))
 
         predicted_labels = _network_model.test(_test_loader)
-        print(predicted_labels)
 
         os.remove(os.path.join(os.getenv('TEST_DATA'), "processed/mfr_data.pt"))
         os.remove(os.path.join(os.getenv('TEST_DATA'), "processed/pre_filter.pt"))

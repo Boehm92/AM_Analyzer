@@ -84,14 +84,13 @@ class MachiningFeatureLocalizer:
         _test_dataset = DataImporter(os.getenv('TEST_DATA'), os.getenv('TEST_DATA'))
 
         _test_loader = DataLoader(_test_dataset, batch_size=self.hyper_parameters.batch_size,
-                                  shuffle=False, drop_last=True)
+                                  shuffle=False, drop_last=False)
 
         _network_model = self.network_model(_test_dataset, self.device, self.hyper_parameters).to(
             self.device)
         _network_model.load_state_dict(
             torch.load((os.getenv('WEIGHTS') + '/mfs_weights.pt'), torch.device('cuda')))
         response = _network_model.test(_test_loader)
-        print(response["predicted_labels"])
         _combined_response["features"].extend(response["features"])
         _combined_response["predicted_labels"].extend(response["predicted_labels"])
 

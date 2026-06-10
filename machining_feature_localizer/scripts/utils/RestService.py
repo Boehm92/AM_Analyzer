@@ -1,5 +1,6 @@
 import os
 import base64
+import traceback
 import numpy as np
 from flask_cors import CORS
 from flask import Flask, request, jsonify
@@ -45,7 +46,8 @@ class RestService:
                 return jsonify(_response), 200
 
             except Exception as e:
-                print(f"🚨 Critical server error: {str(e)}")
+                print(f"Critical server error: {str(e)}", flush=True)
+                traceback.print_exc()
                 return jsonify({"error": f"Critical server error: {str(e)}"}), 500
 
     def create_and_write_stl_file(self, stl_as_base64_string):

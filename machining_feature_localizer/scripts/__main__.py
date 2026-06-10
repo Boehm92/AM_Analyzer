@@ -18,7 +18,7 @@ from network_models.AgnNetwork import AgnNetwork
 
 _parser = argparse.ArgumentParser(description='Base configuration of the synthetic data generator')
 _parser.add_argument('--application_mode',
-                     dest='application_mode', default='training', type=str,
+                     dest='application_mode', default='test', type=str,
                      help='The application modes has "training" and "test". When set to trained the framework uses the'
                           'TestModel class to train graph neural network. Please note, if you want to test different'
                           'graph conv layer, the TestModel class must be configured with accordingly. For example,'
@@ -55,8 +55,7 @@ _parser.add_argument('--hyperparameter_trials',
                           'procedure of the network. More information about hyperparameter optimization at:'
                           'https://optuna.org/')
 _parser.add_argument('--training_dataset',
-                     dest='training_dataset', default=DataImporter(os.getenv('TRAINING_DATASET_SOURCE'),
-                                                                   os.getenv('TRAINING_DATASET_DESTINATION')).shuffle(),
+                     dest='training_dataset', default=None,
                      help='The training_dataset config holds the training data. The data is converted via the'
                           'DataImporter class into a fitting graph representation and then loaded for training. The'
                           'conversion process takes some time, especially for larger data, but it has to be done only'
@@ -99,6 +98,8 @@ if __name__ == '__main__':
     _study = optuna.create_study(direction="maximize", study_name=_config.study_name)
 
     if _config.application_mode == "training":
+        _config.training_dataset = DataImporter(os.getenv('TRAINING_DATASET_SOURCE'),
+                                                os.getenv('TRAINING_DATASET_DESTINATION')).shuffle()
         _study.optimize(lambda trial: MachiningFeatureLocalizer(_config, trial).training(trial),
                         n_trials=_config.hyperparameter_trials)
     elif _config.application_mode == "test":
